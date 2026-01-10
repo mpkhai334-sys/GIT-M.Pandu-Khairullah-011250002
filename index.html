@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="id">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>Pendaftaran Olimpiade Online</title>
+	<style>
+		:root{
+			--bg:#f5f7fb; --card:#fff; --accent:#1e88e5; --danger:#e53935; --muted:#6b7280;
+		}
+		html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,#eef5ff 0%,var(--bg) 100%);}
+		.container{max-width:980px;margin:36px auto;padding:24px;}
+		h1{margin:0 0 12px;font-size:1.6rem;color:#0f1724;}
+		p.lead{margin:0 0 18px;color:var(--muted);}
+		form.card{background:var(--card);border-radius:10px;padding:20px;box-shadow:0 6px 24px rgba(16,24,40,0.06);}
+		.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+		.row{display:flex;gap:12px;}
+		label{display:block;font-size:0.85rem;margin-bottom:6px;color:#213547;}
+		input[type="text"],input[type="email"],input[type="tel"],select,textarea{width:100%;padding:10px;border:1px solid #dfe7ef;border-radius:8px;font-size:0.95rem;}
+		textarea{min-height:90px;resize:vertical;}
+		.full{grid-column:1/-1;}
+		.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;}
+		button{background:var(--accent);color:#fff;padding:10px 14px;border:none;border-radius:8px;cursor:pointer;}
+		button.secondary{background:#eef2ff;color:var(--accent);border:1px solid #d2e3ff;}
+		.small{font-size:0.9rem;padding:8px 10px;border-radius:8px;}
+		.note{font-size:0.85rem;color:var(--muted);margin-top:8px;}
+		.error{border-color:var(--danger)!important;box-shadow:0 0 0 3px rgba(229,57,53,0.06);}
+		.input-row{display:flex;gap:8px;}
+		.tag{display:inline-block;background:#f1f5f9;padding:6px 8px;border-radius:999px;font-size:0.85rem;color:#374151;margin-right:6px;}
+		/* responsive */
+		@media(max-width:720px){ .grid{grid-template-columns:1fr;} .actions{flex-direction:column-reverse;} }
+		/* modal preview */
+		.modal{position:fixed;inset:0;background:rgba(2,6,23,0.5);display:none;align-items:center;justify-content:center;padding:16px;}
+		.modal.open{display:flex;}
+		.modal-box{background:var(--card);border-radius:10px;padding:18px;max-width:760px;width:100%;box-shadow:0 20px 40px rgba(2,6,23,0.35);overflow:auto;max-height:90vh;}
+		.preview-row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px dashed #e6eef8;}
+		.success{background:#e6fffa;border-left:4px solid #06b6d4;padding:10px;border-radius:6px;color:#064e3b;margin-top:10px;}
+		.file-list{font-size:0.9rem;color:#0f1724;}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1>Pendaftaran Olimpiade Online</h1>
+		<p class="lead">Isi formulir di bawah untuk mendaftar. Lengkapi data pribadi, sekolah, kategori, dan unggah berkas yang diperlukan.</p>
+
+		<form id="regForm" class="card" novalidate>
+			<div class="grid">
+				<div>
+					<label for="fullname">Nama Lengkap *</label>
+					<input id="fullname" name="fullname" type="text" required placeholder="Nama sesuai KTP/KK" />
+				</div>
+				<div>
+					<label for="email">Email *</label>
+					<input id="email" name="email" type="email" required placeholder="contoh@mail.com" />
+				</div>
+
+				<div>
+					<label for="phone">No. Telepon / WhatsApp *</label>
+					<input id="phone" name="phone" type="tel" required pattern="^[0-9\s()+-]{6,20}$" placeholder="+62 812..." />
+				</div>
+				<div>
+					<label for="school">Sekolah / Institusi *</label>
+					<input id="school" name="school" type="text" required placeholder="Nama sekolah atau institusi" />
+				</div>
+
+				<div>
+					<label for="grade">Tingkat / Kelas *</label>
+					<select id="grade" name="grade" required>
+						<option value="">Pilih tingkat</option>
+						<option>SD</option>
+						<option>SMP</option>
+						<option>SMA/SMK</option>
+						<option>Mahasiswa</option>
+					</select>
+				</div>
+				<div>
+					<label for="category">Kategori Olimpiade *</label>
+					<select id="category" name="category" required>
+						<option value="">Pilih kategori</option>
+						<option>Matematika</option>
+						<option>Fisika</option>
+						<option>Kimia</option>
+						<option>Informatika</option>
+						<option>Biologi</option>
+					</select>
+				</div>
+
+				<div class="full">
+					<label>Jenis Pendaftaran *</label>
+					<div class="row">
+						<label class="tag"><input type="radio" name="type" value="solo" checked> Solo</label>
+						<label class="tag"><input type="radio" name="type" value="team"> Tim</label>
+					</div>
+				</div>
+
+				<div id="teamSection" class="full" style="display:none">
+					<label>Jumlah Anggota Tim (termasuk ketua)</label>
+					<select id="teamSize" name="teamSize">
+						<option value="2">2</option>
+						<option value="3" selected>3</option>
+						<option value="4">4</option>
+					</select>
+					<div id="membersArea" style="margin-top:10px;"></div>
+				</div>
+
+				<div class="full">
+					<label for="notes">Keterangan / Catatan (opsional)</label>
+					<textarea id="notes" name="notes" placeholder="Misal: kebutuhan khusus atau catatan lainnya"></textarea>
+				</div>
+
+				<div>
+					<label for="file">Unggah Dokumen (Kartu Pelajar / Bukti Pembayaran) - max 5MB</label>
+					<input id="file" name="file" type="file" accept=".jpg,.jpeg,.png,.pdf" />
+					<div class="note">Format: jpg, png, pdf. Ukuran maksimal 5MB.</div>
+				</div>
+
+				<div>
+					<label for="agree">Persetujuan *</label>
+					<div style="display:flex;align-items:flex-start;gap:8px;">
+						<input id="agree" name="agree" type="checkbox" required />
+						<label for="agree" style="margin:0">Saya menyatakan data yang saya isi adalah benar dan bersedia mematuhi aturan lomba.</label>
+					</div>
+				</div>
+
+				<div class="full note">Dengan menekan "Preview" Anda dapat meninjau data. Submit akan menyimpan pendaftaran secara lokal (demo) dan menampilkan status berhasil.</div>
+			</div>
+
+			<div class="actions">
+				<button type="button" id="previewBtn" class="small secondary">Preview</button>
+				<button type="reset" class="small">Reset</button>
+				<button type="submit" class="small">Submit Pendaftaran</button>
+			</div>
+		</form>
+
+		<!-- modal preview -->
+		<div id="previewModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+			<div class="modal-box" role="document">
+				<h3>Preview Pendaftaran</h3>
+				<div id="previewContent" style="margin-top:8px;"></div>
+				<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;">
+					<button id="closePreview" class="small secondary">Tutup</button>
+					<button id="confirmSubmit" class="small">Konfirmasi & Submit</button>
+				</div>
+			</div>
+		</div>
+
+		<div id="toast" style="position:fixed;right:18px;bottom:18px;display:none;padding:12px 16px;border-radius:8px;background:#111;color:#fff;"></div>
+	</div>
+
+	<script>
+		(function(){
+			const form = document.getElementById('regForm');
+			const typeRadios = Array.from(document.querySelectorAll('input[name="type"]'));
+			const teamSection = document.getElementById('teamSection');
+			const teamSize = document.getElementById('teamSize');
+			const membersArea = document.getElementById('membersArea');
+			const previewBtn = document.getElementById('previewBtn');
+			const previewModal = document.getElementById('previewModal');
+			const previewContent = document.getElementById('previewContent');
+			const closePreview = document.getElementById('closePreview');
+			const confirmSubmit = document.getElementById('confirmSubmit');
+			const toast = document.getElementById('toast');
+
+			function showToast(msg, time=3000){
+				toast.textContent = msg; toast.style.display='block';
+				setTimeout(()=>{ toast.style.display='none'; }, time);
+			}
+
+			function toggleTeamFields(){
+				const type = document.querySelector('input[name="type"]:checked').value;
+				if(type==='team'){
+					teamSection.style.display = 'block';
+					renderMembers(Number(teamSize.value));
+				} else {
+					teamSection.style.display = 'none';
+					membersArea.innerHTML = '';
+				}
+			}
+
+			function renderMembers(count){
+				membersArea.innerHTML = '';
+				for(let i=1;i<=count;i++){
+					const div = document.createElement('div');
+					div.className='member';
+					div.innerHTML = `<label>Anggota ${i} ${i===1?'(Ketua)':''} *</label>
+						<input name="member${i}" type="text" required placeholder="Nama anggota ${i}" />`;
+					membersArea.appendChild(div);
+				}
+			}
+
+			typeRadios.forEach(r=>r.addEventListener('change', toggleTeamFields));
+			teamSize.addEventListener('change', ()=>renderMembers(Number(teamSize.value)));
+			document.addEventListener('DOMContentLoaded', toggleTeamFields);
+
+			function getFormData(){
+				const fd = new FormData(form);
+				const data = {};
+				for(const [k,v] of fd.entries()){
+					if(k==='file'){ continue; }
+					data[k]=v;
+				}
+				// collect members if team
+				if(document.querySelector('input[name="type"]:checked').value==='team'){
+					const members=[];
+					for(let i=1;i<=Number(teamSize.value);i++){
+						const val = fd.get('member'+i) || '';
+						members.push(val);
+					}
+					data.members = members;
+				}
+				// file info
+				const fileInput = document.getElementById('file');
+				if(fileInput.files && fileInput.files[0]){
+					const f = fileInput.files[0];
+					data.file = { name:f.name, size:f.size, type:f.type };
+				}
+				return data;
+			}
+
+			function validateForm(){
+				// basic html5 validation
+				const valid = form.checkValidity();
+				// highlight invalid controls
+				Array.from(form.elements).forEach(el=>{
+					if(el.willValidate){
+						if(!el.checkValidity()){
+							el.classList.add('error');
+						} else {
+							el.classList.remove('error');
+						}
+					}
+				});
+				// file size check
+				const file = document.getElementById('file').files[0];
+				if(file && file.size>5*1024*1024){
+					showToast('Ukuran file melebihi 5MB');
+					return false;
+				}
+				return valid;
+			}
+
+			function buildPreviewHtml(data){
+				let html = '';
+				html += `<div class="preview-row"><strong>Nama:</strong><span>${escapeHtml(data.fullname||'')}</span></div>`;
+				html += `<div class="preview-row"><strong>Email:</strong><span>${escapeHtml(data.email||'')}</span></div>`;
+				html += `<div class="preview-row"><strong>Telepon:</strong><span>${escapeHtml(data.phone||'')}</span></div>`;
+				html += `<div class="preview-row"><strong>Sekolah:</strong><span>${escapeHtml(data.school||'')}</span></div>`;
+				html += `<div class="preview-row"><strong>Tingkat:</strong><span>${escapeHtml(data.grade||'')}</span></div>`;
+				html += `<div class="preview-row"><strong>Kategori:</strong><span>${escapeHtml(data.category||'')}</span></div>`;
+				html += `<div class="preview-row"><strong>Jenis:</strong><span>${escapeHtml(document.querySelector('input[name="type"]:checked').value)}</span></div>`;
+				if(data.members){
+					html += `<div class="preview-row"><strong>Anggota:</strong><span>${data.members.map(m=>escapeHtml(m)).join(', ')}</span></div>`;
+				}
+				if(data.file){
+					html += `<div class="preview-row"><strong>File:</strong><span class="file-list">${escapeHtml(data.file.name)} (${Math.round(data.file.size/1024)} KB)</span></div>`;
+				}
+				if(data.notes){
+					html += `<div class="preview-row"><strong>Catatan:</strong><span>${escapeHtml(data.notes)}</span></div>`;
+				}
+				return html;
+			}
+
+			function escapeHtml(s=''){ return String(s).replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+
+			previewBtn.addEventListener('click', function(){
+				if(!validateForm()) { showToast('Periksa isian form yang bertanda merah'); return; }
+				const data = getFormData();
+				previewContent.innerHTML = buildPreviewHtml(data);
+				previewModal.classList.add('open'); previewModal.setAttribute('aria-hidden','false');
+			});
+
+			closePreview.addEventListener('click', function(){ previewModal.classList.remove('open'); previewModal.setAttribute('aria-hidden','true'); });
+
+			confirmSubmit.addEventListener('click', function(){
+				previewModal.classList.remove('open'); previewModal.setAttribute('aria-hidden','true');
+				if(!validateForm()){ showToast('Validation failed'); return; }
+				const data = getFormData();
+				// simulate submit: save to localStorage
+				const key = 'olymp_registrations_v1';
+				const list = JSON.parse(localStorage.getItem(key) || '[]');
+				list.push(Object.assign({}, data, { submittedAt: new Date().toISOString() }));
+				localStorage.setItem(key, JSON.stringify(list));
+				showToast('Pendaftaran berhasil disimpan (demo).');
+				form.reset();
+				toggleTeamFields();
+			});
+
+			form.addEventListener('submit', function(e){
+				e.preventDefault();
+				if(!validateForm()){ showToast('Periksa isian form yang bertanda merah'); return; }
+				// open preview on submit to confirm
+				const data = getFormData();
+				previewContent.innerHTML = buildPreviewHtml(data);
+				previewModal.classList.add('open'); previewModal.setAttribute('aria-hidden','false');
+			});
+
+			// remove error class on input
+			form.addEventListener('input', function(e){
+				if(e.target.classList && e.target.classList.contains('error') && e.target.checkValidity()){
+					e.target.classList.remove('error');
+				}
+			});
+		})();
+	</script>
+</body>
+</html>

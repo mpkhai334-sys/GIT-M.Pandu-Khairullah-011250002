@@ -1,0 +1,14 @@
+:root{--bg:#f5f7fb;--card:#fff;--accent:#2b6cb0}
+*{box-sizing:border-box;font-family:Inter,Segoe UI,Arial,Helvetica,sans-serif}
+body{background:var(--bg);margin:0;padding:24px}
+.container{max-width:760px;margin:0 auto;background:var(--card);padding:20px;border-radius:10px;box-shadow:0 6px 18px rgba(20,30,60,.08)}
+h1{margin-top:0;color:var(--accent)}
+form label{display:block;margin:10px 0}
+input,select{width:100%;padding:8px;border:1px solid #d7dde6;border-radius:6px}
+.actions{display:flex;gap:8px;margin-top:12px}
+button{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:6px;cursor:pointer}
+button[type=button]{background:#718096}
+.hidden{display:none}
+#messages{margin-top:12px}
+#registrations{list-style:none;padding:0}
+#registrations li{padding:8px;border-bottom:1px solid #eef2f7}
